@@ -8,8 +8,8 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "seed": "node --loader ts-node/esm src/data/seed.ts",
-    "ws:server": "node --loader ts-node/esm src/websockets/ws-server.ts"
+    "seed": "node --loader ts-node/esm ./src/data/seed.ts",
+    "ws:server": "node --loader ts-node/esm ./src/websockets/ws-server.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
