@@ -7,11 +7,19 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "seed": "node --loader ts-node/esm src/data/seed.ts",
+    "ws:server": "node --loader ts-node/esm src/websockets/ws-server.ts"
   },
   "dependencies": {
-    "astro": "^4.16.13",
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.7.2"
+    "astro": "^4.16.13",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.3",
+    "@types/ws": "^8.5.13"
   }
 }
