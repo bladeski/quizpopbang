@@ -4,7 +4,7 @@ export default class WsClientTeam {
   private socket: WebSocket;
 
   constructor(private teamId: string, private mainElement: HTMLElement) {
-    this.socket = new WebSocket('ws://localhost:8080');
+    this.socket = new WebSocket('wss://quizpopbang.onrender.com:8080');
     this.socket.onopen = this.onOpen.bind(this);
     this.socket.onmessage = this.onMessage.bind(this);
     this.socket.onerror = this.onError.bind(this);

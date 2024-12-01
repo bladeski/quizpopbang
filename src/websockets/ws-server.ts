@@ -5,7 +5,7 @@ import { Answer } from '../types/Answer.ts';
 import JsonDataService from '../data/JsonDataService.ts';
 
 export default class WsServer {
-  private wss = new WebSocketServer({ port: 80 });
+  private wss = new WebSocketServer({ port: 8080 });
   private dataService = new JsonDataService();
   private teams: { [key: string]: WebSocket } = {};
   private host: WebSocket | null = null;
