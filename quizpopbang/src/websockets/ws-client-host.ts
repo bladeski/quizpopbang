@@ -1,22 +1,28 @@
-import { Message, MessageType } from "../types/Message.ts";
+import { Message, MessageType } from "../../../common/types/Message.ts";
 
-export default class WsClientTeam {
+export default class WsClientHost {
   private socket: WebSocket;
+  private token: string = localStorage.getItem('token') || '';
 
-  constructor(private teamId: string, private mainElement: HTMLElement) {
-    this.socket = new WebSocket('wss://quizpopbang.onrender.com:8080');
-    this.socket.onopen = this.onOpen.bind(this);
+  constructor(password: string, private mainElement: HTMLElement) {
+    this.socket = new WebSocket('wss://quizpopbang.onrender.com');
+    this.socket.onopen = () => this.onOpen(password);
     this.socket.onmessage = this.onMessage.bind(this);
     this.socket.onerror = this.onError.bind(this);
     this.socket.onclose = this.onClose.bind(this);
   }
 
-  answerQuestion(answer: string) {
-    this.sendMessage(new Message(MessageType.ANSWER, this.teamId, { message: answer }));
+  startQuiz() {
+    this.sendMessage(new Message(MessageType.CHANGE_ROUND, 'host', { message: 0 }));
+    this.sendMessage(new Message(MessageType.CHANGE_QUESTION, 'host', { message: 0 }));
   }
 
-  private onOpen() {
-    this.sendMessage(new Message(MessageType.JOIN, this.teamId));
+  nextQuestion() {
+    this.sendMessage(new Message(MessageType.CHANGE_QUESTION, 'host', { message: 1 }));
+  }
+
+  private onOpen(password: string) {
+    this.sendMessage(new Message(MessageType.JOIN, 'host', { password }));
   }
 
   private onMessage(event: MessageEvent) {
@@ -24,20 +30,18 @@ export default class WsClientTeam {
 
     switch (message.type) {
       case MessageType.JOIN:
+        this.token = message.token || '';
         localStorage.setItem('token', message.token || '');
         this.sendEvent('ws-join', message);
         break;
-      case MessageType.CHANGE_ROUND:
-        this.sendEvent('ws-change-round', message);
+      case MessageType.ANSWER:
+        this.sendEvent('ws-answer', message);
         break;
       case MessageType.CHANGE_QUESTION:
         this.sendEvent('ws-change-question', message);
         break;
-      case MessageType.ADD_POINTS:
-        this.sendEvent('ws-add-points', message);
-        break;
       case MessageType.ERROR:
-        console.error(message.message);
+        this.sendEvent('ws-error', message);
         break;
       default:
         console.error('Unknown message', message);
@@ -57,7 +61,8 @@ export default class WsClientTeam {
   private sendMessage(message: Message) {
     this.socket.send(JSON.stringify({
       ...message,
-      teamId: this.teamId
+      teamId: 'host',
+      token: this.token,
     }));
   }
 

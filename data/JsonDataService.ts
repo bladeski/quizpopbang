@@ -1,8 +1,8 @@
 import * as fs from 'node:fs/promises';
 
-import type { Answer, DataServiceInterface, Host, Question, Quiz, Round, Team } from "../types";
+import type { Answer, DataServiceInterface, Host, Question, Quiz, Round, Team } from "../common/types/index.ts";
 
-import { getJsonPath } from '../config/Config.ts';
+import { getJsonPath } from '../common/config/Config.ts';
 
 export default class JsonDataService implements DataServiceInterface {
   getQuiz(): Promise<Quiz> {

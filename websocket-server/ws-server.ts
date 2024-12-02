@@ -1,7 +1,7 @@
-import { Message, MessageType } from '../types/Message.ts';
+import { Message, MessageType } from '../common/types/Message.ts';
 import { WebSocket, WebSocketServer } from 'ws';
 
-import { Answer } from '../types/Answer.ts';
+import { Answer } from '../common/types/Answer.ts';
 import JsonDataService from '../data/JsonDataService.ts';
 
 export default class WsServer {

@@ -1,0 +1,25 @@
+{
+  "name": "quizpopbang-websocket-server",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "seed": "parcel build ../common/data/Seed.ts",
+    "build": "parcel build ws-server.ts --dist-dir dist",
+    "serve": "node dist/ws-server.js"
+  },
+  "dependencies": {
+    "typescript": "^5.7.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.3",
+    "@types/ws": "^8.5.13",
+    "buffer": "^5.5.0||^6.0.0",
+    "parcel": "^2.13.2",
+    "parcel-reporter-static-files-copy": "^1.5.3"
+  },
+  "staticFiles": {
+    "staticPath": "../common/data",
+    "staticOutDir": "dist"
+  }
+}

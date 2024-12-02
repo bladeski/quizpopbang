@@ -1,10 +1,18 @@
 import * as fs from 'node:fs/promises';
 
-import { Host, Round, Team } from '../types';
-import { LinkerQuestion, MultipleChoiceQuestion, TrueFalseQuestion } from './../types/Question';
-import { QuestionType, SimpleQuestion } from '../types/Question.ts';
+import { Host, Round, Team } from '../common/types/index.ts';
+import { LinkerQuestion, MultipleChoiceQuestion, SimpleQuestion, TrueFalseQuestion } from '../common/types/Question.ts';
 
-import { Quiz } from '../types/Quiz';
+import { Quiz } from '../common/types/Quiz.ts';
+
+// import { QuestionType, SimpleQuestion } from '../common/types';
+
+enum QuestionType {
+  MULTIPLE_CHOICE = "multiple_choice",
+  TRUE_FALSE = "true_false",
+  SIMPLE = "simple",
+  LINKER = "linker",
+}
 
 const quizData: Quiz = {
   name: 'Quizmas Time',
@@ -539,14 +547,17 @@ const teamData: Team[] = [
   },
 ];
 
+await fs.mkdir('json', { recursive: true });
+
 await Promise.all([
-  fs.writeFile('src/data/json/quiz.json', JSON.stringify(quizData)),
-  fs.writeFile('src/data/json/host.json', JSON.stringify(hostData)),
-  fs.writeFile('src/data/json/rounds.json', JSON.stringify(roundData)),
-  fs.writeFile('src/data/json/questions.json', JSON.stringify(questionData)),
-  fs.writeFile('src/data/json/teams.json', JSON.stringify(teamData))
+  fs.writeFile('json/quiz.json', JSON.stringify(quizData)),
+  fs.writeFile('json/host.json', JSON.stringify(hostData)),
+  fs.writeFile('json/rounds.json', JSON.stringify(roundData)),
+  fs.writeFile('json/questions.json', JSON.stringify(questionData)),
+  fs.writeFile('json/teams.json', JSON.stringify(teamData))
 ]).then(() => console.log('Seed data written to file'))
   .catch((err) => console.error(err));
+  
 // Team GUIDs
 // 1a8a10ae-d10f-4512-bc97-cadf5c2e1580
 // 71465370-2acf-40cb-9809-58a76202df2f
