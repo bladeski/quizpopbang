@@ -3,14 +3,15 @@
   "type": "module",
   "version": "0.0.1",
   "source": "src/websockets/ws-server.ts",
-  "main": "dist/main.js",
+  "main": "dist-ws/main.js",
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
+    "build:ws": "parcel build",
     "preview": "astro preview",
     "astro": "astro",
     "seed": "node --loader ts-node/esm ./src/data/seed.ts",
-    "ws:server": "npx tsx ./src/websockets/ws-server.ts"
+    "start:ws": "node dist-ws/main.js"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
