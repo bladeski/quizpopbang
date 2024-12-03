@@ -6,14 +6,7 @@ services:
   repo: https://github.com/bladeski/quizpopbang
   plan: free
   envVars:
-  - key: PUBLIC_WS_URL
-    sync: false
-  - key: PUBLIC_WS_PORT
-    sync: false
-  - key: PUBLIC_BASE_URL
-    sync: false
-  - key: PUBLIC_PORT
-    sync: false
+  - fromGroup: QuizPopBang Prod Variables
   region: frankfurt
   buildCommand: yarn --frozen-lockfile install; yarn build:ws
   startCommand: yarn start:ws
@@ -23,14 +16,7 @@ services:
   repo: https://github.com/bladeski/quizpopbang
   plan: free
   envVars:
-  - key: PUBLIC_WS_PORT
-    sync: false
-  - key: PUBLIC_WS_URL
-    sync: false
-  - key: PUBLIC_PORT
-    sync: false
-  - key: PUBLIC_BASE_URL
-    sync: false
+  - fromGroup: QuizPopBang Prod Variables
   region: frankfurt
   buildCommand: yarn --frozen-lockfile install; yarn build
   startCommand: node dist/main.js
