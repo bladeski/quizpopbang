@@ -19,7 +19,7 @@ services:
   startCommand: yarn start:ws
 - type: web
   name: quizpopbang
-  runtime: static
+  runtime: node
   repo: https://github.com/bladeski/quizpopbang
   envVars:
   - key: PUBLIC_WS_PORT
@@ -31,5 +31,5 @@ services:
   - key: PUBLIC_BASE_URL
     sync: false
   buildCommand: yarn --frozen-lockfile install; yarn build
-  staticPublishPath: dist
+  startCommand: node dist/main.js
 version: "1"
