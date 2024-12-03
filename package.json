@@ -2,24 +2,29 @@
   "name": "c-projects-personal-quizpopbang",
   "type": "module",
   "version": "0.0.1",
+  "source": "src/websockets/ws-server.ts",
+  "main": "dist/main.js",
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "seed": "node --loader ts-node/esm ./src/data/seed.ts",
-    "ws:server": "node --loader ts-node/esm ./src/websockets/ws-server.ts"
+    "ws:server": "npx tsx ./src/websockets/ws-server.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/node": "^8.3.4",
     "astro": "^4.16.13",
+    "astro-sidecar": "^0.0.4",
     "ts-node": "^10.9.2",
+    "tsx": "^3.14.0",
     "typescript": "^5.7.2",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "^22.9.3",
-    "@types/ws": "^8.5.13"
+    "@types/ws": "^8.5.13",
+    "parcel": "^2.13.2"
   }
 }

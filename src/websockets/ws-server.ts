@@ -2,16 +2,18 @@ import { Message, MessageType } from '../types/Message.ts';
 import { WebSocket, WebSocketServer } from 'ws';
 
 import { Answer } from '../types/Answer.ts';
-import JsonDataService from '../data/JsonDataService.ts';
+import { Host } from '../types/Host.ts';
+
+const BASE_URL = `${process.env.PUBLIC_BASE_URL || 'http://localhost'}:${process.env.PUBLIC_PORT || '4321'}`;
 
 export default class WsServer {
-  private wss = new WebSocketServer({ port: 8080 });
-  private dataService = new JsonDataService();
+  private wss = new WebSocketServer({ port: parseInt(process.env.PUBLIC_WS_PORT || '8080') });
   private teams: { [key: string]: WebSocket } = {};
   private host: WebSocket | null = null;
 
   constructor() {
     this.wss.on('connection', (ws) => {
+      'Connection opened';
       ws.on('error', console.error);
       ws.on('message', (data) => this.onReceiveMessage(ws, data.toString()));
       ws.on('close', () => this.onClose(ws));
@@ -36,7 +38,7 @@ export default class WsServer {
 
     else if (this.host === ws) {
       this.host = null;
-      this.dataService.setHostToken('');
+      this.setHostToken('');
     }
   }
 
@@ -55,11 +57,68 @@ export default class WsServer {
     }
   }
 
+  private async getHost() {
+    return await ((await fetch(`${BASE_URL}/api/host`)).json()) as Host;
+  }
+
+  private async setHostToken(token: string) {
+    return fetch(`${BASE_URL}/api/host`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({token}),
+    });
+  }
+
+  private async callApi(url: string) {
+    console.log(BASE_URL, url);
+    const resp = await fetch(`${BASE_URL}/api/${url}`);
+    const data = await resp.json();
+    return data.message;
+  }
+
+  private async getQuiz() {
+    return this.callApi('quiz');
+  }
+
+  private async getTeam(id: string) {
+    return this.callApi(`team/${id}`);
+  }
+
+  private async getRound(id: number) {
+    return this.callApi(`round/${id}`);
+  }
+
+  private async getQuestion(id: number) {
+    return this.callApi(`question/${id}`);
+  }
+
+  private async addTeamPoints(teamId: string, points: number) {
+    return await (await fetch(`${BASE_URL}/api/team/${teamId}/points`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({points}),
+    })).json();
+  }
+
+  private async answerQuestion(teamId: string, answer: Answer) {
+    return await fetch(`${BASE_URL}/api/team/${teamId}/answer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(answer),
+    });
+  }
+
   private async authenticateHost(password: string) {
-    const host = await this.dataService.getHost();
+    const host = await this.getHost();
     if (host.password === password) {
       host.token = Buffer.from(new Date().toISOString()).toString('base64');
-      await this.dataService.setHostToken(host.token);
+      await this.setHostToken(host.token);
       return host.token;
     }
     return false;
@@ -79,7 +138,7 @@ export default class WsServer {
   }
 
   private async processHostMessage(ws: WebSocket, message: Message) {
-    const hostToken = (await this.dataService.getHost()).token;
+    const hostToken = (await this.getHost()).token;
     if (message.type !== MessageType.JOIN && message.token !== hostToken) {
       this.sendMessage(new Message(MessageType.ERROR, 'Invalid token'));
       ws.close(1000, 'Invalid token');
@@ -98,7 +157,7 @@ export default class WsServer {
           ws.close(1000, 'Host already joined');
           return;
         } else if (token && token !== '') {
-          this.dataService.setHostToken(token);
+          this.setHostToken(token);
           this.host = ws;
           this.sendHostMessage(new Message(MessageType.JOIN, 'host', {token}));
         } else {
@@ -106,11 +165,11 @@ export default class WsServer {
           ws.close(1000, 'Invalid password');
           return;
         }
-        ws.onclose = () => this.dataService.setHostToken('');
+        ws.onclose = () => this.setHostToken('');
         break;
       case MessageType.CHANGE_ROUND:
         try {
-          const round = await this.dataService.getRound(message.message as number);
+          const round = await this.getRound(message.message as number);
           this.broadcastMessage(new Message(MessageType.CHANGE_ROUND, '', {message: round}));
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -120,7 +179,7 @@ export default class WsServer {
         break;
       case MessageType.CHANGE_QUESTION:
         try {
-          const question = await this.dataService.getQuestion(message.message as number);
+          const question = await this.getQuestion(message.message as number);
           this.broadcastMessage(new Message(MessageType.CHANGE_QUESTION, '', {message: question}));
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -129,7 +188,7 @@ export default class WsServer {
         }
         break;
       case MessageType.ADD_POINTS:
-        const totalPoints = await this.dataService.addTeamPoints(message.teamId, message.message as number);
+        const totalPoints = await this.addTeamPoints(message.teamId, message.message as number);
         this.sendMessage(new Message(MessageType.ADD_POINTS, message.teamId, {message: totalPoints}));
         break;
       default:
@@ -139,7 +198,7 @@ export default class WsServer {
   }
 
   private async processTeamMessage(ws: WebSocket, message: Message) {
-    const team = await this.dataService.getTeam(message.teamId);
+    const team = await this.getTeam(message.teamId);
 
     switch (message.type as MessageType) {
       case MessageType.JOIN:        
@@ -155,10 +214,10 @@ export default class WsServer {
           this.sendMessage(message);
           this.host?.send(message.stringify());
 
-          const quiz = await this.dataService.getQuiz();
+          const quiz = await this.getQuiz();
           if (quiz.currentRound >= 0 && quiz.currentQuestion >= 0) {
-            const round = await this.dataService.getRound(quiz.currentRound);
-            const question = await this.dataService.getQuestion(quiz.currentQuestion);
+            const round = await this.getRound(quiz.currentRound);
+            const question = await this.getQuestion(quiz.currentQuestion);
             this.sendMessage(new Message(MessageType.CHANGE_ROUND, team.id, {message: round}));
             this.sendMessage(new Message(MessageType.CHANGE_QUESTION, team.id, {message: question}));
           }
@@ -166,7 +225,7 @@ export default class WsServer {
         
         break;
       case MessageType.ANSWER:
-        await this.dataService.answerQuestion(message.teamId, message.message as Answer);
+        await this.answerQuestion(message.teamId, message.message as Answer);
         this.host?.send(JSON.stringify(message));
         break;
       default:

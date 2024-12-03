@@ -5,7 +5,7 @@ export default class WsClientHost {
   private token: string = localStorage.getItem('token') || '';
 
   constructor(password: string, private mainElement: HTMLElement) {
-    this.socket = new WebSocket('ws://localhost:8080');
+    this.socket = new WebSocket(`${import.meta.env.PUBLIC_WS_URL}:${import.meta.env.PUBLIC_WS_PORT}`);
     this.socket.onopen = () => this.onOpen(password);
     this.socket.onmessage = this.onMessage.bind(this);
     this.socket.onerror = this.onError.bind(this);

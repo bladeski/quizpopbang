@@ -8,7 +8,7 @@ import { Quiz } from "./Quiz";
 import { Round } from "./Round";
 import { Team } from "./Team";
 
-export {
+export type {
   Quiz,
   Team,
   Round,

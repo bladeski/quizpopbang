@@ -2,9 +2,8 @@
 import JsonDataService from '../../data/JsonDataService';
 import Layout from '../../layouts/Layout.astro';
 
-const dataService = new JsonDataService();
-const quizName = (await dataService.getQuiz()).name;
-const host = await dataService.getHost();
+const quizName = (await JsonDataService.getQuiz()).name;
+const host = await JsonDataService.getHost();
 ---
 
 <Layout title={quizName}>

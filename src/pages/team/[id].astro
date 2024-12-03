@@ -1,15 +1,17 @@
 ---
-import JsonDataService from '../../data/JsonDataService';
 import Layout from '../../layouts/Layout.astro';
+import { Team } from '../../types';
+import {GET as GetQuiz} from '../api/quiz';
+import {GET as GetTeam} from '../api/team/[id]';
+import { GET as GetTeams } from '../api/teams';
 
-const { id } = Astro.params;
-const dataService = new JsonDataService();
-const quizName = (await dataService.getQuiz()).name;
-const team = await dataService.getTeam(id || '');
+const quizName = (await ((await GetQuiz(Astro)).json())).message.name;
+const team = (await ((await GetTeam(Astro)).json())).message as Team;
 
-export const getStaticPaths = (async () => {
-  const dataService = new JsonDataService();
-  return (await dataService.getTeams())
+export const getStaticPaths = (async (): Promise<{ params: { id: string } }[]> => {
+  const json = await ((await GetTeams(Astro)).json());
+  const teams = json.message as Team[];
+  return teams
     .map(team => ({
       params: {
         id: team.id

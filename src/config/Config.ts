@@ -17,7 +17,7 @@ const CONFIG: AppConfig = {
     QUIZ: 'quiz.json',
     ROUNDS: 'rounds.json',
     TEAMS: 'teams.json',
-  },
+  }
 };
 
 export default CONFIG;
