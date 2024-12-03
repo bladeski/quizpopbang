@@ -1,0 +1,20 @@
+# Exported from Render on 2024-12-03T15:50:35Z
+services:
+- type: web
+  name: qpb-ws
+  runtime: node
+  repo: https://github.com/bladeski/quizpopbang
+  plan: free
+  envVars:
+  - key: PUBLIC_WS_URL
+    sync: false
+  - key: PUBLIC_WS_PORT
+    sync: false
+  - key: PUBLIC_BASE_URL
+    sync: false
+  - key: PUBLIC_PORT
+    sync: false
+  region: frankfurt
+  buildCommand: yarn --frozen-lockfile install; yarn build:ws
+  startCommand: yarn start:ws
+version: "1"
