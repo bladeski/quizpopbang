@@ -21,6 +21,7 @@ services:
   name: quizpopbang
   runtime: node
   repo: https://github.com/bladeski/quizpopbang
+  plan: free
   envVars:
   - key: PUBLIC_WS_PORT
     sync: false
@@ -30,6 +31,7 @@ services:
     sync: false
   - key: PUBLIC_BASE_URL
     sync: false
+  region: frankfurt
   buildCommand: yarn --frozen-lockfile install; yarn build
   startCommand: node dist/main.js
 version: "1"
