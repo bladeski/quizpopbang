@@ -6,7 +6,7 @@
   "main": "dist-ws/main.js",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build && yarn seed",
     "build:ws": "parcel build",
     "preview": "astro preview",
     "astro": "astro",

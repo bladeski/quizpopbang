@@ -10,7 +10,7 @@ type AppConfig = {
 };
 
 const CONFIG: AppConfig = {
-  JSON_PATH: 'src/data/json/',
+  JSON_PATH: 'data/json/',
   JSON_FILES: {
     HOST: 'host.json',
     QUESTIONS: 'questions.json',

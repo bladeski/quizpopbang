@@ -39,7 +39,7 @@ const quizData: Quiz = {
 
 const hostData: Host = {
   name: 'Quizmaster',
-  password: 'password',
+  password: process.env.HOST_PASSWORD || 'password',
   token: '',
 };  
 
@@ -538,13 +538,20 @@ const teamData: Team[] = [
     totalPoints: 0,
   },
 ];
+await fs.mkdir('data/json', { recursive: true });
+await fs.mkdir('dist/server/data/json', { recursive: true });
 
 await Promise.all([
-  fs.writeFile('src/data/json/quiz.json', JSON.stringify(quizData)),
-  fs.writeFile('src/data/json/host.json', JSON.stringify(hostData)),
-  fs.writeFile('src/data/json/rounds.json', JSON.stringify(roundData)),
-  fs.writeFile('src/data/json/questions.json', JSON.stringify(questionData)),
-  fs.writeFile('src/data/json/teams.json', JSON.stringify(teamData))
+  fs.writeFile('data/json/quiz.json', JSON.stringify(quizData)),
+  fs.writeFile('data/json/host.json', JSON.stringify(hostData)),
+  fs.writeFile('data/json/rounds.json', JSON.stringify(roundData)),
+  fs.writeFile('data/json/questions.json', JSON.stringify(questionData)),
+  fs.writeFile('data/json/teams.json', JSON.stringify(teamData)),
+  fs.writeFile('dist/server/data/json/quiz.json', JSON.stringify(quizData)),
+  fs.writeFile('dist/server/data/json/host.json', JSON.stringify(hostData)),
+  fs.writeFile('dist/server/data/json/rounds.json', JSON.stringify(roundData)),
+  fs.writeFile('dist/server/data/json/questions.json', JSON.stringify(questionData)),
+  fs.writeFile('dist/server/data/json/teams.json', JSON.stringify(teamData))
 ]).then(() => console.log('Seed data written to file'))
   .catch((err) => console.error(err));
 // Team GUIDs

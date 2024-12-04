@@ -14,16 +14,17 @@ export const GET: APIRoute = async ({ request }) => {
   )
 }
 
-export const POST: APIRoute = async ({params}) => {
-  const token = params.token;
+export const POST: APIRoute = async ({request}) => {
+  const body = await request.json();
+  const token = body.token;
   const host = await JsonDataService.readJsonFile<Host>(getJsonPath('HOST'));
-  return JsonDataService.writeJsonFile('HOST', {
+  return JsonDataService.writeJsonFile(getJsonPath('HOST'), {
     ...host,
     token
   })
-    .then(() => new Response(
+  .then(() => new Response(
     JSON.stringify({
-      message: 'Current question updated'
+      message: 'Host token updated'
     }))
   );
 }

@@ -2,7 +2,6 @@ import { Message, MessageType } from '../types/Message.ts';
 import { WebSocket, WebSocketServer } from 'ws';
 
 import { Answer } from '../types/Answer.ts';
-import { Host } from '../types/Host.ts';
 
 const BASE_URL = `${process.env.PUBLIC_BASE_URL || 'http://localhost'}:${process.env.PUBLIC_PORT || '4321'}`;
 
