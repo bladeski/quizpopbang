@@ -70,8 +70,8 @@ export default class WsServer {
       body: JSON.stringify({token}),
     })
     .then(resp => resp.json())
-    .then(console.log)
-    .catch(console.error);
+    .then((data) => console.log('Host token set', data))
+    .catch((error) => console.error('Error setting host token', error));
   }
 
   private async callApi(url: string) {
@@ -143,7 +143,7 @@ export default class WsServer {
   private async processHostMessage(ws: WebSocket, message: Message) {
     const hostToken = (await this.getHost()).token;
     if (message.type !== MessageType.JOIN && message.token !== hostToken) {
-      console.log('Invalid token', message.token, hostToken);
+      console.log('Message Token', message.token, 'Host Token', hostToken);
       this.sendMessage(new Message(MessageType.ERROR, 'Invalid token'));
       ws.close(1000, 'Invalid token');
       return;
