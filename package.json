@@ -10,7 +10,7 @@
     "build:ws": "parcel build",
     "preview": "astro preview",
     "astro": "astro",
-    "seed": "node --loader ts-node/esm src/data/seed.ts",
+    "seed": "npx tsx src/data/seed.ts",
     "start": "dist/server/entry.mjs",
     "start:ws": "node dist-ws/main.js"
   },
