@@ -4,7 +4,8 @@ import { loadEnv } from "vite";
 import node from '@astrojs/node';
 import sidecar from 'astro-sidecar';
 
-const { PUBLIC_PORT } = loadEnv(process.env.NODE_ENV || '', process.cwd(), '');
+const { PUBLIC_PORT } = loadEnv(process.env.NODE_ENV || '', process.cwd(), '') || 80;
+console.log(`Public port: ${PUBLIC_PORT}`);
 
 // https://astro.build/config
 export default defineConfig({
