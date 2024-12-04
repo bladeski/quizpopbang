@@ -58,7 +58,7 @@ export default class WsServer {
   }
 
   private async getHost() {
-    return await ((await fetch(`${BASE_URL}/api/host`)).json()) as Host;
+    return this.callApi('host');
   }
 
   private async setHostToken(token: string) {
