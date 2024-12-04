@@ -18,6 +18,6 @@ services:
   envVars:
   - fromGroup: QuizPopBang Prod Variables
   region: frankfurt
-  buildCommand: yarn --frozen-lockfile install; yarn build
+  buildCommand: yarn --frozen-lockfile install; yarn build; yarn seed
   startCommand: node dist/server/entry.mjs
 version: "1"
