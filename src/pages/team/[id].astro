@@ -34,6 +34,7 @@ export const getStaticPaths = (async (): Promise<{ params: { id: string } }[]> =
     <span>Sorry but this team doesn't exist!</span>
   }
   <script>
+    import { Question } from '../../types';
     import WsClientTeam from '../../websockets/ws-client-team.ts';
 
     const teamId = document.querySelector('main')?.dataset.teamid;
@@ -52,6 +53,12 @@ export const getStaticPaths = (async (): Promise<{ params: { id: string } }[]> =
     main.addEventListener('ws-change-round', (event) => {
       const { detail } = event as CustomEvent;
       console.log(detail);
+      const question: Question = detail.message;
+      const questionElement = document.createElement('simple-question') as HTMLElement;
+      questionElement.setAttribute('question', question.question);
+      questionElement.setAttribute('imageUrl', question.imageUrl?.toString() || '');
+      questionElement.setAttribute('forKids', question.forKids?.toString() || 'false');
+      main.appendChild(questionElement);
     });
 
     main.addEventListener('ws-change-question', (event) => {
