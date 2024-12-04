@@ -22,6 +22,7 @@ export default defineConfig({
     })
   ],
   server: {
-    port: parseInt(PUBLIC_PORT)
+    port: parseInt(PUBLIC_PORT),
+    host: '0.0.0.0'
   }
 });
