@@ -1,0 +1,33 @@
+<template id="TrueFalseQuestionTemplate">
+  <link rel="stylesheet" href="/styles/global.css" />
+  <div class="question-wrapper">
+    <label class="question">      
+      <span>True or false...</span>
+      <input type="text" name="answer" placeholder="Answer:" required />
+    </label>
+    <button type="submit">Save</button>
+  </div>
+</template>
+<script>
+import QuestionWebComponent from "../../types/QuestionWebComponent";
+
+  class TrueFalseQuestion extends QuestionWebComponent {
+    constructor() {
+      super('TrueFalseQuestionTemplate');
+    }
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+      super.attributeChangedCallback(name, oldValue, newValue);
+    }
+    connectedCallback() {
+      console.log('TrueFalseQuestion connected');
+    }
+    updateQuestionId(value: string) {
+      super.updateQuestionId(value);
+      console.log('Hi!');
+    }
+    updateQuestion(value: string): void {
+      (this.shadowRoot?.querySelector('.question span') as HTMLSpanElement).textContent = `True or false... ${value}`;   
+    }
+  }
+  customElements.define('true-false-question', TrueFalseQuestion);
+</script>

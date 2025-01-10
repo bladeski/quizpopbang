@@ -1,0 +1,75 @@
+<template id="LinkerQuestionTemplate">
+  <link rel="stylesheet" href="/styles/global.css" />
+  <form>
+    <label class="question">
+      <span>Question:</span>
+      <input type="text" name="answer" placeholder="Answer:" required />
+    </label>
+    <fieldset>
+    </fieldset>
+    <button type="submit">Save</button>
+  </form>
+</template>
+<script>
+import { SimpleQuestion } from "../../types/Question";
+
+  class LinkerQuestion extends HTMLElement {
+    static get observedAttributes() {
+      return [
+        'readonly',
+        'question',
+        'questions',
+        'imageUrl',
+        'forKids'
+      ];
+    }
+    constructor() {
+      super();
+      this.attachShadow({mode: 'open'});
+      const template = document.getElementById('LinkerQuestionTemplate') as HTMLTemplateElement;
+      this.shadowRoot?.appendChild(
+        template.content.cloneNode(true)
+      );
+    }
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+      switch (name) {
+        case 'readonly':
+          if (newValue === 'true') {
+            (this.shadowRoot?.querySelector('input') as HTMLInputElement).setAttribute('readonly', '');
+            (this.shadowRoot?.querySelector('button') as HTMLInputElement).style.display = 'none';
+          }
+          break;
+        case 'question':
+          (this.shadowRoot?.querySelector('.question span') as HTMLSpanElement).textContent = newValue;   
+          break;
+        case 'questions':
+          const fieldset = this.shadowRoot?.querySelector('fieldset') as HTMLFieldSetElement;
+          const questions = JSON.parse(newValue) as SimpleQuestion[];
+          questions.forEach((question) => {
+            const questionEl = document.createElement('simple-question');
+            questionEl.setAttribute('question', question.question);
+            questionEl.setAttribute('imageurl', question.imageUrl?.toString() || '');
+            questionEl.setAttribute('forKids', question.forKids?.toString() || '');
+            questionEl.setAttribute('readonly', this.getAttribute('readonly') || '');
+            fieldset.appendChild(questionEl);
+          });
+          break;
+        case 'imageUrl':
+          (this.shadowRoot?.querySelector('img') as HTMLImageElement).src = `url(${newValue})`;
+          break;
+        case 'forKids':
+          if (newValue === 'true') {
+            (this.shadowRoot?.querySelector('.question') as HTMLLabelElement).classList.add('for-kids');
+          }
+          break;
+      
+        default:
+          break;
+      }
+    }
+    connectedCallback() {
+      console.log('LinkerQuestion connected');
+    }
+  }
+  customElements.define('linker-question', LinkerQuestion);
+</script>

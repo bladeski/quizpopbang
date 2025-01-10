@@ -11,10 +11,10 @@ export type Question = {
 };
 
 export enum QuestionType {
-  MULTIPLE_CHOICE = "multiple_choice",
-  TRUE_FALSE = "true_false",
-  SIMPLE = "simple",
-  LINKER = "linker",
+  MULTIPLE_CHOICE = "multiple-choice-question",
+  TRUE_FALSE = "true-false-question",
+  SIMPLE = "simple-question",
+  LINKER = "linker-question",
 }
 
 export type SimpleQuestion = Question & {

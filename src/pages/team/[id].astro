@@ -1,5 +1,5 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import TeamLayout from '../../layouts/TeamLayout.astro';
 import { Team } from '../../types';
 import {GET as GetQuiz} from '../api/quiz';
 import {GET as GetTeam} from '../api/team/[id]';
@@ -19,26 +19,27 @@ export const getStaticPaths = (async (): Promise<{ params: { id: string } }[]> =
     }));
 });
 
+if (!team) {
+  return Astro.redirect('/');
+}
+
 ---
 
-<Layout title={quizName}>
+<TeamLayout title={team.name} subtitle=`Welcome to the ${quizName} quiz!` currentPoints={team.totalPoints}>
   {
-    team ?
-    <header>
-      <h1>{team.name}</h1>
-      <span>Current Points: {team.totalPoints}</span>
-    </header>    
-    <main data-teamid={team.id}>
-    </main>
+    team ?   
+    <article data-teamid={team.id}>
+    </article>
     :
     <span>Sorry but this team doesn't exist!</span>
   }
   <script>
-    import { Question } from '../../types';
+    import { q } from '../../../dist/server/chunks/astro/assets-service_g6DNmJna.mjs';
+import { LinkerQuestion, MultipleChoiceQuestion, QuestionType, SimpleQuestion, TrueFalseQuestion } from '../../types/Question';
     import WsClientTeam from '../../websockets/ws-client-team.ts';
 
-    const teamId = document.querySelector('main')?.dataset.teamid;
-    const main = document.querySelector('main') as HTMLElement;
+    const main = document.querySelector('article') as HTMLElement;
+    const teamId = main.dataset.teamid;
 
     main.addEventListener('ws-join', (event) => {
       const { detail } = event as CustomEvent;
@@ -52,18 +53,24 @@ export const getStaticPaths = (async (): Promise<{ params: { id: string } }[]> =
 
     main.addEventListener('ws-change-round', (event) => {
       const { detail } = event as CustomEvent;
-      console.log(detail);
-      const question: Question = detail.message;
-      const questionElement = document.createElement('simple-question') as HTMLElement;
-      questionElement.setAttribute('question', question.question);
-      questionElement.setAttribute('imageUrl', question.imageUrl?.toString() || '');
-      questionElement.setAttribute('forKids', question.forKids?.toString() || 'false');
-      main.appendChild(questionElement);
     });
 
     main.addEventListener('ws-change-question', (event) => {
       const { detail } = event as CustomEvent;
-      console.log(detail);
+      const question: 
+        SimpleQuestion 
+        | MultipleChoiceQuestion
+        | LinkerQuestion
+        | TrueFalseQuestion = detail.message;
+      
+      console.log(question);
+      const questionElement = document.createElement(question.type) as HTMLElement;
+      questionElement.setAttribute('questionid', question.id.toString());
+      questionElement.setAttribute('question', question.question);
+      questionElement.setAttribute('imageUrl', question.imageUrl?.toString() || '');
+      questionElement.setAttribute('forKids', question.forKids?.toString() || 'false');
+      question.type === QuestionType.MULTIPLE_CHOICE && questionElement.setAttribute('options', question.options?.join(',') || '');
+      main.appendChild(questionElement);
     });
 
     main.addEventListener('ws-add-points', (event) => {
@@ -78,4 +85,4 @@ export const getStaticPaths = (async (): Promise<{ params: { id: string } }[]> =
 
     
   </script>
-</Layout>
+</TeamLayout>

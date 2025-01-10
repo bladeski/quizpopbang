@@ -2,8 +2,31 @@
 import JsonDataService from '../../data/JsonDataService';
 import Layout from '../../layouts/Layout.astro';
 
+export const prerender = false;
+
 const quizName = (await JsonDataService.getQuiz()).name;
 const host = await JsonDataService.getHost();
+
+if (Astro.request.method === "POST") {
+  try {
+    const data = await Astro.request.formData();
+    const password = data.get("password");
+console.log(password)
+    if (password === host.password) {
+      const token = Buffer.from(new Date().toISOString()).toString('base64');
+      JsonDataService.setHostToken(token);
+      Astro.cookies.set("token", token, { path: "/" });
+      return Astro.redirect("/host/quiz");
+    } else {
+      throw new Error("Invalid password");
+    }
+    // Do something with the data
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
 ---
 
 <Layout title={quizName}>
@@ -11,15 +34,13 @@ const host = await JsonDataService.getHost();
     <h1>Host Login</h1>
   </header>    
   <main>
-    <form class="hide">
+    <form method="POST">
       <label>
         <span>Password</span>
         <input type="password" name="password" required />
       </label>
       <button type="submit">Login</button>
     </form>
-    <button class="start-button">Start Quiz!</button>
-    <button class="next-button">Next Question!</button>
   </main>
     
   <script>
@@ -30,14 +51,9 @@ const host = await JsonDataService.getHost();
 
       const main = document.querySelector('main') as HTMLElement;
       const token = localStorage.getItem('token');
-      const form = document.querySelector('form') as HTMLFormElement;
-      const startButton = document.querySelector('.start-button') as HTMLButtonElement;
-      const nextButton = document.querySelector('.next-button') as HTMLButtonElement;
-
+      
       main.addEventListener('ws-join', (event) => {
         const { detail } = event as CustomEvent;
-        form.classList.add('hide');
-        startButton.classList.remove('hide');
       });
 
       main.addEventListener('ws-error', (event) => {
@@ -60,39 +76,17 @@ const host = await JsonDataService.getHost();
         console.log(detail);
       });
 
-      main.addEventListener('ws-close', (event) => {
-        form.classList.remove('hide');
-        startButton.classList.add('hide');
-      });
+      // startButton.addEventListener('click', async () => {
+      //   if (ws) {
+      //     ws.startQuiz();
+      //   }
+      // });
 
-      if (token) {
-        ws = new WsClientHost('', main);
-      } else {
-        form.classList.remove('hide');
-        startButton.classList.add('hide');
-      }
-
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const formData = new FormData(form);
-        const password = formData.get('password') as string;
-        
-        if (password) {
-          ws = new WsClientHost(password, main);
-        }
-      });
-
-      startButton.addEventListener('click', async () => {
-        if (ws) {
-          ws.startQuiz();
-        }
-      });
-
-      nextButton.addEventListener('click', async () => {
-        if (ws) {
-          ws.nextQuestion();
-        }
-      });
+      // nextButton.addEventListener('click', async () => {
+      //   if (ws) {
+      //     ws.nextQuestion();
+      //   }
+      // });
     });
   </script>
 </Layout>

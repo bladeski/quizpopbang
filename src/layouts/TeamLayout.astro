@@ -1,0 +1,24 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+	title: string;
+  currentPoints: number;
+	subtitle?: string;
+}
+
+const { title, subtitle, currentPoints } = Astro.props;
+
+---
+<Layout title={title}>
+	<header>
+		<div>
+      <h1>{title}</h1>
+      <span>{subtitle}</span>
+    </div>
+    <span>Current Points: {currentPoints}</span>
+  </header> 
+	<main>
+		<slot />
+	</main>
+</Layout>

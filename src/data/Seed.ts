@@ -9,7 +9,7 @@ import { Quiz } from '../types/Quiz';
 const quizData: Quiz = {
   name: 'Quizmas Time',
   host: 'Quizmaster',
-  rounds: [],
+  rounds: [0,1,2,3,4],
   teams: [
     '1a8a10ae-d10f-4512-bc97-cadf5c2e1580',
     '71465370-2acf-40cb-9809-58a76202df2f',
@@ -389,11 +389,54 @@ const questionData: (SimpleQuestion | MultipleChoiceQuestion | TrueFalseQuestion
     id: 81,
     type: QuestionType.SIMPLE,
     question: 'Rebus: What song is this?',
-    imageUrl: 'public/images/rebus-1.svg',
+    imageUrl: '/images/rebus-1.svg',
     answer: 'Feliz Navidad',
     points: 5,
     answerImageUrl: '',
-  }
+  },
+  {
+    id: 65,
+    type: QuestionType.LINKER,
+    question: 'What links the 4 answers?',
+    forKids: true,
+    questions: [
+      {
+        id: 66,
+        type: QuestionType.SIMPLE,
+        question: 'What is the name of a very short \'mens\' haircut? A ___cut',
+        answer: 'Buzz',
+        points: 0,
+        answerImageUrl: '',
+      },
+      {
+        id: 67,
+        type: QuestionType.SIMPLE,
+        question: 'Dulux, Crown and Vespar are all brands of what?',
+        answer: 'Paint',
+        points: 0,
+        answerImageUrl: '',
+      },
+      {
+        id: 68,
+        type: QuestionType.SIMPLE,
+        question: 'Complete the name of the 1970\s movie. Smokey and the ___',
+        answer: 'Bandit',
+        points: 0,
+        answerImageUrl: '',
+      },
+      {
+        id: 69,
+        type: QuestionType.SIMPLE,
+        question: 'What is the surname of the Scottish comedian and panelist \'Fred\'?',
+        answer: 'MacAulay',
+        points: 0,
+        answerImageUrl: '',
+      }
+    ],
+    answer: 'Home Alone',
+    points: [20, 15, 10, 5, 2, 1],
+    answerImageUrl: '',
+  },
 ];
 
 const teamData: Team[] = [
@@ -455,14 +498,14 @@ const teamData: Team[] = [
   },
   {
     id: 'd66a2476-11fa-468c-84b6-774d9e8a3759',
-    name: '',
+    name: 'Wearing less than Saint Knickerless',
     players: [],
     answers: [],
     totalPoints: 0,
   },
   {
     id: '9e7439d7-134f-4bc8-a534-973431fc65f0',
-    name: '',
+    name: 'Santa\'s Babies',
     players: [],
     answers: [],
     totalPoints: 0,

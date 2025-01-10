@@ -1,0 +1,72 @@
+<template id="MultipleChoiceQuestionTemplate">
+  <link rel="stylesheet" href="/styles/global.css" />
+  <form>
+    <fieldset class="question">
+      <legend>Question:</legend>   
+    </fieldset>
+    <button type="submit">Save</button>
+  </form>
+</template>
+<script>
+  class MultipleChoiceQuestion extends HTMLElement {
+    static get observedAttributes() {
+      return [
+        'readonly',
+        'question',
+        'imageUrl',
+        'forKids',
+        'options'
+      ];
+    }
+    constructor() {
+      super();
+      this.attachShadow({mode: 'open'});
+      const template = document.getElementById('MultipleChoiceQuestionTemplate') as HTMLTemplateElement;
+      this.shadowRoot?.appendChild(
+        template.content.cloneNode(true)
+      );
+    }
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+      switch (name) {
+        case 'readonly':
+          if (newValue === 'true') {
+            (this.shadowRoot?.querySelectorAll('input') as NodeListOf<HTMLInputElement>).forEach(input => input.setAttribute('readonly', ''));
+            (this.shadowRoot?.querySelector('button') as HTMLInputElement).style.display = 'none';
+          }
+          break;
+        case 'question':
+          (this.shadowRoot?.querySelector('.question legend') as HTMLSpanElement).textContent = newValue;   
+          break;
+        case 'imageUrl':
+          (this.shadowRoot?.querySelector('img') as HTMLImageElement).src = `url(${newValue})`;
+          break;
+        case 'forKids':
+          if (newValue === 'true') {
+            (this.shadowRoot?.querySelector('.question') as HTMLLabelElement).classList.add('for-kids');
+          }
+          break;
+        case 'options':
+          const options = newValue.split(',');
+          const fieldset = this.shadowRoot?.querySelector('.question') as HTMLFieldSetElement;
+          options.forEach(option => {
+            const label = document.createElement('label');
+            label.textContent = option;
+            const radioInputElement = document.createElement('input');
+            radioInputElement.value = option;
+            radioInputElement.name = 'answer_' + this.id;
+            radioInputElement.type = 'radio';
+            fieldset.appendChild(label);
+            this.getAttribute('readonly') !== 'true' && label.prepend(radioInputElement);
+          });
+          break;
+      
+        default:
+          break;
+      }
+    }
+    connectedCallback() {
+      console.log('MultipleChoiceQuestion connected');
+    }
+  }
+  customElements.define('multiple-choice-question', MultipleChoiceQuestion);
+</script>

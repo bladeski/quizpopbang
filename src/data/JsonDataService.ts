@@ -1,6 +1,7 @@
 import * as fs from 'node:fs/promises';
 
 import type { Answer, DataServiceInterface, Host, Question, Quiz, Round, Team } from "../types";
+import { LinkerQuestion, MultipleChoiceQuestion, SimpleQuestion, TrueFalseQuestion } from '../types/Question.ts';
 
 import { getJsonPath } from '../config/Config.ts';
 
@@ -18,7 +19,7 @@ export default class JsonDataService implements DataServiceInterface {
   static getRounds(): Promise<Round[]> {
     return JsonDataService.readJsonFile(getJsonPath('ROUNDS'));
   }
-  static getQuestions(): Promise<Question[]> {
+  static getQuestions(): Promise<(SimpleQuestion | MultipleChoiceQuestion | TrueFalseQuestion | LinkerQuestion)[]> {
     return JsonDataService.readJsonFile(getJsonPath('QUESTIONS'));
   }
   static getTeamAnswers(teamId: string): Promise<Question[]> {

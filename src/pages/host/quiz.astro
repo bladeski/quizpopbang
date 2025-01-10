@@ -1,0 +1,102 @@
+---
+import JsonDataService from "../../data/JsonDataService";
+import HostLayout from "../../layouts/HostLayout.astro";
+import { QuestionType } from "../../types/Question";
+
+export const prerender = false;
+
+// Todo: Authenticate the host
+const host = await JsonDataService.getHost();
+const token = Astro.cookies.get("token");
+
+if (!token || !host || token?.value !== host.token) {
+  // Redirect to the login page
+  return Astro.redirect('/host');
+}
+
+const quiz = await JsonDataService.getQuiz();
+const rounds = await JsonDataService.getRounds();
+const questions = await JsonDataService.getQuestions();
+---
+<HostLayout title={quiz?.name || "Welcome to the Quiz"}>
+  <button id="StartQuizButton">Start Quiz</button>
+  {
+    quiz.rounds.map((roundId, index) => {
+      const round = rounds.find(round => round.id === roundId);
+      const questionsInRound = questions.filter(question => round?.questions.includes(question.id));
+      return (
+        round && <details>
+          <summary>
+            <h3>{round.name}</h3>
+          </summary>
+          <ol>
+            {
+              questionsInRound.map((question, index) => (
+                <li>
+                  {
+                    question.type === QuestionType.SIMPLE 
+                      && <simple-question
+                            questionid={question.id}
+                            readonly="true" 
+                            question={question.question}
+                            imageUrl={question.imageUrl?.toString() || ''}
+                            forKids={question.forKids?.toString() || 'false'}
+                          ></simple-question>
+                  }
+                  {
+                    question.type === QuestionType.MULTIPLE_CHOICE 
+                      && <multiple-choice-question
+                            id={question.id} 
+                            readonly="true" 
+                            question={question.question}
+                            options={question.options.join(',')}
+                          ></multiple-choice-question>
+                  }
+                  {
+                    question.type === QuestionType.LINKER 
+                      && <linker-question
+                            readonly="true" 
+                            question={question.question}
+                            questions={JSON.stringify(question.questions)}></linker-question>
+                  }
+                  {
+                    question.type === QuestionType.TRUE_FALSE 
+                      && <true-false-question readonly="true" question={question.question}></true-false-question>
+                  }
+                </li>
+              ))
+            }
+          </ol>
+        </details>
+      )
+    })
+  }
+</HostLayout>
+<script>
+  const detailsNodes = document.querySelectorAll('details');
+
+  detailsNodes.forEach(details => {
+    details.addEventListener('toggle', (event) => {
+      const { target } = event;
+      if (target instanceof HTMLDetailsElement) {
+        if (target.open) {
+          detailsNodes.forEach(detailsNode => {
+            if (detailsNode !== target) {
+              detailsNode.open = false;
+            }
+          });
+        }
+      }
+    });
+  });
+
+  const startButton = document.getElementById('StartQuizButton') as HTMLButtonElement;
+  startButton.addEventListener('click', async () => {
+    const ws = new WebSocket('ws://localhost:8080');
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        type: 'start-quiz'
+      }));
+    };
+  });
+</script>

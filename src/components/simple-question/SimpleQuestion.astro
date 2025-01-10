@@ -1,48 +1,19 @@
 <template id="SimpleQuestionTemplate">
-  <link rel="stylesheet" href="src/components/questions/SimpleQuestion.css"></link>
-  <form>
+  <link rel="stylesheet" href="/styles/global.css" />
+  <div class="question-wrapper">
     <label class="question">
       <span>Question:</span>
-      <input type="text" name="answer" placeholder="Answer:" required />
     </label>
+    <input type="text" name="answer" placeholder="Answer:" required />
+    <button type="button">✔️</button>
     <img src="" alt="" />
-    <button type="submit">Answer</button>
-  </form>
+  </div>
 </template>
 <script>
-  class SimpleQuestion extends HTMLElement {
-    static get observedAttributes() {
-      return [
-        'question',
-        'imageUrl',
-        'forKids'
-      ];
-    }
+  import QuestionWebComponent from "../../types/QuestionWebComponent";
+  class SimpleQuestion extends QuestionWebComponent {
     constructor() {
-      super();
-      this.attachShadow({mode: 'open'});
-      const template = document.getElementById('SimpleQuestionTemplate') as HTMLTemplateElement;
-      this.shadowRoot?.appendChild(
-        template.content.cloneNode(true)
-      );
-    }
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-      switch (name) {
-        case 'question':
-          (this.shadowRoot?.querySelector('.question span') as HTMLSpanElement).textContent = newValue;   
-          break;
-        case 'imageUrl':
-          (this.shadowRoot?.querySelector('img') as HTMLImageElement).src = `url(${newValue})`;
-          break;
-        case 'forKids':
-          if (newValue === 'true') {
-            (this.shadowRoot?.querySelector('.question') as HTMLLabelElement).classList.add('for-kids');
-          }
-          break;
-      
-        default:
-          break;
-      }
+      super('SimpleQuestionTemplate');
     }
     connectedCallback() {
       console.log('SimpleQuestion connected');
